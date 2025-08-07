@@ -593,6 +593,15 @@
       setTimeout(() => {
         // Demo credentials for testing
         if (username === '2023/123456' && password === 'password') {
+          // Store user data in localStorage for dashboard
+          const userData = {
+            name: 'Onyekachi Eze',
+            matric: '2023/123456',
+            department: 'Computer Science',
+            level: '300'
+          };
+          localStorage.setItem('currentUser', JSON.stringify(userData));
+          
           showSuccess('Login successful! Redirecting to dashboard...');
           setTimeout(() => {
             window.location.href = 'dashboard.html';
