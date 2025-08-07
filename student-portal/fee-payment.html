@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UNN Student Portal - Fee Payment</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/utilities.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .payment-container {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      padding: 30px;
+      margin: 30px 0;
+    }
+    .payment-steps {
+      display: flex;
+      margin-bottom: 30px;
+      position: relative;
+    }
+    .step {
+      flex: 1;
+      text-align: center;
+      position: relative;
+    }
+    .step-number {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #ddd;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    .step.active .step-number {
+      background: var(--primary);
+      color: white;
+    }
+    .step.completed .step-number {
+      background: var(--secondary);
+      color: white;
+    }
+    .payment-form {
+      display: none;
+    }
+    .payment-form.active {
+      display: block;
+    }
+    .payment-summary {
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+    .payment-methods {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+    .method-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .method-card:hover {
+      border-color: var(--primary);
+    }
+    .method-card.selected {
+      border: 2px solid var(--primary);
+      background: rgba(0, 135, 83, 0.05);
+    }
+    .method-card i {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: var(--primary);
+    }
+    .receipt {
+      background: white;
+      border: 1px solid #ddd;
+      padding: 30px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .receipt-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .receipt-details {
+      margin: 20px 0;
+    }
+    .receipt-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    .receipt-table th, .receipt-table td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+    .receipt-table th {
+      background: #f5f5f5;
+    }
+    .receipt-footer {
+      text-align: center;
+      margin-top: 30px;
+      font-style: italic;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <header class="dashboard-header">
+    <div class="container flex">
+      <div class="user-profile">
+        <div class="user-avatar">OE</div>
+        <div>
+          <h2>Onyekachi Eze</h2>
+          <p>2023/123456 | Computer Science (300 Level)</p>
+        </div>
+      </div>
+      <a href="dashboard.html" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+      </a>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="payment-container">
+      <h2><i class="fas fa-money-bill-wave"></i> School Fee Payment</h2>
+      
+      <!-- Payment Progress Steps -->
+      <div class="payment-steps">
+        <div class="step active" id="step1">
+          <div class="step-number">1</div>
+          <div>Select Fees</div>
+        </div>
+        <div class="step" id="step2">
+          <div class="step-number">2</div>
+          <div>Payment Method</div>
+        </div>
+        <div class="step" id="step3">
+          <div class="step-number">3</div>
+          <div>Complete Payment</div>
+        </div>
+        <div class="step" id="step4">
+          <div class="step-number">4</div>
+          <div>Receipt</div>
+        </div>
+      </div>
+
+      <!-- Step 1: Select Fees -->
+      <div class="payment-form active" id="form1">
+        <h3>Select Fees to Pay</h3>
+        <div class="form-group">
+          <label>Academic Session</label>
+          <select class="form-control" id="academicSession">
+            <option>2023/2024</option>
+            <option>2022/2023</option>
+          </select>
+        </div>
+
+        <div class="fee-items">
+          <table class="receipt-table">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="selectAll"></th>
+                <th>Fee Description</th>
+                <th>Amount (₦)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="checkbox" class="fee-checkbox" checked></td>
+                <td>Tuition Fee</td>
+                <td>45,000.00</td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" class="fee-checkbox" checked></td>
+                <td>Medical Fee</td>
+                <td>5,000.00</td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" class="fee-checkbox"></td>
+                <td>Library Fee</td>
+                <td>3,000.00</td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" class="fee-checkbox" checked></td>
+                <td>ICT Fee</td>
+                <td>7,500.00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="payment-summary">
+          <h4>Payment Summary</h4>
+          <div class="flex" style="justify-content: space-between;">
+            <p><strong>Total Selected Fees:</strong></p>
+            <p id="totalAmount">₦57,500.00</p>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="nextStep(2)">Proceed to Payment</button>
+      </div>
+
+      <!-- Step 2: Payment Method -->
+      <div class="payment-form" id="form2">
+        <h3>Select Payment Method</h3>
+        <p>Choose your preferred payment option:</p>
+        
+        <div class="payment-methods">
+          <div class="method-card" onclick="selectPaymentMethod('card')">
+            <i class="fas fa-credit-card"></i>
+            <h4>Debit/Credit Card</h4>
+            <p>Visa, Mastercard, Verve</p>
+          </div>
+          <div class="method-card" onclick="selectPaymentMethod('bank')">
+            <i class="fas fa-university"></i>
+            <h4>Bank Transfer</h4>
+            <p>Direct bank transfer</p>
+          </div>
+          <div class="method-card" onclick="selectPaymentMethod('ussd')">
+            <i class="fas fa-mobile-alt"></i>
+            <h4>USSD</h4>
+            <p>*906# etc</p>
+          </div>
+        </div>
+
+        <div class="flex" style="justify-content: space-between; margin-top: 30px;">
+          <button class="btn btn-secondary" onclick="prevStep(1)">Back</button>
+          <button class="btn btn-primary" id="proceedToPaymentBtn" disabled onclick="nextStep(3)">Proceed to Payment</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Payment Gateway -->
+      <div class="payment-form" id="form3">
+        <h3>Complete Your Payment</h3>
+        <p id="selectedMethodText">You're paying via: <strong>Debit Card</strong></p>
+        
+        <div id="cardPaymentForm">
+          <div class="form-group">
+            <label>Card Number</label>
+            <input type="text" class="form-control" placeholder="1234 5678 9012 3456">
+          </div>
+          <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="form-group">
+              <label>Expiry Date</label>
+              <input type="text" class="form-control" placeholder="MM/YY">
+            </div>
+            <div class="form-group">
+              <label>CVV</label>
+              <input type="text" class="form-control" placeholder="123">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Cardholder Name</label>
+            <input type="text" class="form-control" placeholder="John Doe">
+          </div>
+        </div>
+
+        <div id="bankTransferForm" style="display: none;">
+          <div class="payment-summary">
+            <h4>Bank Transfer Details</h4>
+            <p><strong>Bank Name:</strong> Zenith Bank</p>
+            <p><strong>Account Name:</strong> UNN Fee Collection</p>
+            <p><strong>Account Number:</strong> 1012345678</p>
+            <p><strong>Amount:</strong> <span id="bankTransferAmount">₦57,500.00</span></p>
+            <p><strong>Reference:</strong> UNN<span id="bankRef">2023123456</span></p>
+            <p class="notice">Please use the reference number above when making your transfer</p>
+          </div>
+        </div>
+
+        <div id="ussdPaymentForm" style="display: none;">
+          <div class="payment-summary">
+            <h4>USSD Payment</h4>
+            <p>1. Dial *906# on your mobile phone</p>
+            <p>2. Select "Pay Bills"</p>
+            <p>3. Choose "Education"</p>
+            <p>4. Select "University of Nigeria"</p>
+            <p>5. Enter Amount: <strong>₦57,500.00</strong></p>
+            <p>6. Enter Reference: <strong>UNN2023123456</strong></p>
+          </div>
+        </div>
+
+        <div class="flex" style="justify-content: space-between; margin-top: 30px;">
+          <button class="btn btn-secondary" onclick="prevStep(2)">Back</button>
+          <button class="btn btn-primary" onclick="processPayment()">Complete Payment</button>
+        </div>
+      </div>
+
+      <!-- Step 4: Receipt -->
+      <div class="payment-form" id="form4">
+        <div class="receipt">
+          <div class="receipt-header">
+            <img src="../assets/logo.png" alt="UNN Logo" style="height: 60px;">
+            <h3>UNIVERSITY OF NIGERIA, NSUKKA</h3>
+            <p>OFFICIAL PAYMENT RECEIPT</p>
+          </div>
+
+          <div class="receipt-details">
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 20px;">
+              <div>
+                <p><strong>Receipt No:</strong> UNN<span id="receiptNumber">2023123456</span></p>
+                <p><strong>Date:</strong> <span id="receiptDate">15/10/2023</span></p>
+              </div>
+              <div>
+                <p><strong>Matric No:</strong> 2023/123456</p>
+                <p><strong>Student Name:</strong> Onyekachi Eze</p>
+              </div>
+            </div>
+          </div>
+
+          <table class="receipt-table">
+            <thead>
+              <tr>
+                <th>Description</th>
+                <th>Amount (₦)</th>
+              </tr>
+            </thead>
+            <tbody id="receiptItems">
+              <tr>
+                <td>Tuition Fee</td>
+                <td>45,000.00</td>
+              </tr>
+              <tr>
+                <td>Medical Fee</td>
+                <td>5,000.00</td>
+              </tr>
+              <tr>
+                <td>ICT Fee</td>
+                <td>7,500.00</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <th>Total</th>
+                <th id="receiptTotal">₦57,500.00</th>
+              </tr>
+              <tr>
+                <th>Payment Method</th>
+                <th id="receiptMethod">Debit Card</th>
+              </tr>
+              <tr>
+                <th>Transaction ID</th>
+                <th>UNN<span id="receiptTxnId">20231015123456</span></th>
+              </tr>
+            </tfoot>
+          </table>
+
+          <div class="receipt-footer">
+            <p>This is an official receipt from University of Nigeria</p>
+            <p>Thank you for your payment</p>
+          </div>
+        </div>
+
+        <div class="flex" style="justify-content: center; margin-top: 30px;">
+          <button class="btn btn-primary" onclick="window.print()">
+            <i class="fas fa-print"></i> Print Receipt
+          </button>
+          <button class="btn btn-secondary" style="margin-left: 15px;" onclick="goToDashboard()">
+            <i class="fas fa-home"></i> Return to Dashboard
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Current step management
+    let currentStep = 1;
+    let selectedMethod = '';
+    let transactionId = 'UNN' + new Date().getTime().toString().slice(-10);
+
+    // Calculate total amount
+    function calculateTotal() {
+      let total = 0;
+      document.querySelectorAll('.fee-checkbox:checked').forEach(checkbox => {
+        const row = checkbox.closest('tr');
+        const amount = parseFloat(row.cells[2].textContent.replace(/,/g, ''));
+        total += amount;
+      });
+      document.getElementById('totalAmount').textContent = '₦' + total.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+      document.getElementById('bankTransferAmount').textContent = '₦' + total.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+      document.getElementById('receiptTotal').textContent = '₦' + total.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    // Initialize event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+      calculateTotal();
+      
+      // Select all checkbox
+      document.getElementById('selectAll').addEventListener('change', function() {
+        document.querySelectorAll('.fee-checkbox').forEach(checkbox => {
+          checkbox.checked = this.checked;
+        });
+        calculateTotal();
+      });
+
+      // Individual fee checkboxes
+      document.querySelectorAll('.fee-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', calculateTotal);
+      });
+
+      // Generate random receipt number
+      const randomRef = Math.floor(100000 + Math.random() * 900000);
+      document.getElementById('bankRef').textContent = randomRef;
+      document.getElementById('receiptNumber').textContent = randomRef;
+      document.getElementById('receiptTxnId').textContent = randomRef;
+
+      // Set current date
+      const today = new Date();
+      const formattedDate = today.toLocaleDateString('en-GB');
+      document.getElementById('receiptDate').textContent = formattedDate;
+    });
+
+    // Navigation between steps
+    function nextStep(step) {
+      document.getElementById('form' + currentStep).classList.remove('active');
+      document.getElementById('step' + currentStep).classList.remove('active');
+      
+      currentStep = step;
+      document.getElementById('form' + currentStep).classList.add('active');
+      document.getElementById('step' + currentStep).classList.add('active');
+      
+      // Mark previous steps as completed
+      for (let i = 1; i < currentStep; i++) {
+        document.getElementById('step' + i).classList.add('completed');
+      }
+    }
+
+    function prevStep(step) {
+      nextStep(step);
+    }
+
+    // Payment method selection
+    function selectPaymentMethod(method) {
+      selectedMethod = method;
+      document.getElementById('proceedToPaymentBtn').disabled = false;
+      
+      // Remove all selected classes first
+      document.querySelectorAll('.method-card').forEach(card => {
+        card.classList.remove('selected');
+      });
+      
+      // Add selected class to clicked card
+      event.currentTarget.classList.add('selected');
+      
+      // Update payment method text
+      let methodText = '';
+      switch(method) {
+        case 'card': methodText = 'Debit Card'; break;
+        case 'bank': methodText = 'Bank Transfer'; break;
+        case 'ussd': methodText = 'USSD'; break;
+      }
+      document.getElementById('selectedMethodText').innerHTML = 
+        `You're paying via: <strong>${methodText}</strong>`;
+      document.getElementById('receiptMethod').textContent = methodText;
+      
+      // Show appropriate form
+      document.getElementById('cardPaymentForm').style.display = 'none';
+      document.getElementById('bankTransferForm').style.display = 'none';
+      document.getElementById('ussdPaymentForm').style.display = 'none';
+      
+      switch(method) {
+        case 'card': 
+          document.getElementById('cardPaymentForm').style.display = 'block';
+          break;
+        case 'bank': 
+          document.getElementById('bankTransferForm').style.display = 'block';
+          break;
+        case 'ussd': 
+          document.getElementById('ussdPaymentForm').style.display = 'block';
+          break;
+      }
+    }
+
+    // Process payment
+    function processPayment() {
+      // In a real app, this would connect to a payment gateway
+      // For demo, we'll simulate success after 2 seconds
+      document.querySelector('button[onclick="processPayment()"]').disabled = true;
+      document.querySelector('button[onclick="processPayment()"]').innerHTML = 
+        '<i class="fas fa-spinner fa-spin"></i> Processing...';
+      
+      setTimeout(() => {
+        // Build receipt items
+        const receiptItems = document.getElementById('receiptItems');
+        receiptItems.innerHTML = '';
+        
+        document.querySelectorAll('.fee-checkbox:checked').forEach(checkbox => {
+          const row = checkbox.closest('tr');
+          const desc = row.cells[1].textContent;
+          const amount = row.cells[2].textContent;
+          
+          receiptItems.innerHTML += `
+            <tr>
+              <td>${desc}</td>
+              <td>${amount}</td>
+            </tr>
+          `;
+        });
+        
+        nextStep(4);
+      }, 2000);
+    }
+
+    function goToDashboard() {
+      window.location.href = "dashboard.html";
+    }
+  </script>
+</body>
+</html>

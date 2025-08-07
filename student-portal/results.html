@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UNN Student Portal - Results</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/utilities.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .results-container {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      padding: 30px;
+      margin: 30px 0;
+    }
+    .result-filter {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background: var(--primary);
+      color: white;
+    }
+    tr:hover {
+      background: #f5f5f5;
+    }
+    .gp-display {
+      background: var(--light);
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 30px;
+    }
+    .print-btn {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header class="dashboard-header">
+    <div class="container flex">
+      <div class="user-profile">
+        <div class="user-avatar">OE</div>
+        <div>
+          <h2>Onyekachi Eze</h2>
+          <p>2023/123456 | Computer Science (300 Level)</p>
+        </div>
+      </div>
+      <a href="dashboard.html" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+      </a>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="results-container">
+      <h2><i class="fas fa-graduation-cap"></i> Academic Results</h2>
+      
+      <div class="result-filter">
+        <select class="form-control">
+          <option>2022/2023 Session</option>
+          <option>2021/2022 Session</option>
+        </select>
+        <select class="form-control">
+          <option>Second Semester</option>
+          <option>First Semester</option>
+        </select>
+        <button class="btn btn-primary">View Results</button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Course Code</th>
+            <th>Course Title</th>
+            <th>Credit Units</th>
+            <th>Grade</th>
+            <th>Points</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>CSC 301</td>
+            <td>Data Structures</td>
+            <td>3</td>
+            <td>A</td>
+            <td>15</td>
+          </tr>
+          <tr>
+            <td>CSC 303</td>
+            <td>Computer Networks</td>
+            <td>2</td>
+            <td>B+</td>
+            <td>8</td>
+          </tr>
+          <tr>
+            <td>MTH 311</td>
+            <td>Numerical Analysis</td>
+            <td>3</td>
+            <td>B</td>
+            <td>9</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="gp-display flex" style="justify-content: space-between;">
+        <div>
+          <h4>Semester Summary</h4>
+          <p><strong>Total Credit Units:</strong> 15</p>
+          <p><strong>GPA:</strong> 4.25</p>
+        </div>
+        <div>
+          <h4>Cumulative Summary</h4>
+          <p><strong>CGPA:</strong> 4.18</p>
+          <p><strong>Class of Degree:</strong> First Class</p>
+        </div>
+      </div>
+
+      <button class="btn btn-primary print-btn" onclick="window.print()">
+        <i class="fas fa-print"></i> Print Result
+      </button>
+    </div>
+  </main>
+
+  <script>
+    // Load student data (same as dashboard)
+    const student = JSON.parse(localStorage.getItem('currentStudent'));
+    if (!student) window.location.href = "index.html";
+  </script>
+</body>
+</html>

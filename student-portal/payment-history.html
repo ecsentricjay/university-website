@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UNN Student Portal - Payment History</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/utilities.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .history-container {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      padding: 30px;
+      margin: 30px 0;
+    }
+    .filter-options {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .filter-group {
+      flex: 1;
+      min-width: 200px;
+    }
+    .transactions-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .transactions-table th, 
+    .transactions-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    .transactions-table th {
+      background: var(--primary);
+      color: white;
+      position: sticky;
+      top: 0;
+    }
+    .transactions-table tr:hover {
+      background: #f5f5f5;
+    }
+    .status-pill {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    .status-success {
+      background: #e6f7ee;
+      color: #008753;
+    }
+    .status-pending {
+      background: #fff8e6;
+      color: #f2a900;
+    }
+    .status-failed {
+      background: #fee6e6;
+      color: #d0021b;
+    }
+    .action-btn {
+      padding: 5px 10px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .view-btn {
+      background: var(--primary);
+      color: white;
+    }
+    .download-btn {
+      background: var(--secondary);
+      color: white;
+      margin-left: 5px;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 50px;
+      color: #666;
+    }
+    .empty-state i {
+      font-size: 3rem;
+      color: #ddd;
+      margin-bottom: 20px;
+    }
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+    }
+    .page-btn {
+      padding: 8px 15px;
+      margin: 0 5px;
+      border: 1px solid #ddd;
+      background: white;
+      cursor: pointer;
+    }
+    .page-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+  <header class="dashboard-header">
+    <div class="container flex">
+      <div class="user-profile">
+        <div class="user-avatar">OE</div>
+        <div>
+          <h2>Onyekachi Eze</h2>
+          <p>2023/123456 | Computer Science (300 Level)</p>
+        </div>
+      </div>
+      <a href="dashboard.html" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+      </a>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="history-container">
+      <div class="flex" style="justify-content: space-between; align-items: center;">
+        <h2><i class="fas fa-history"></i> Payment History</h2>
+        <a href="fee-payment.html" class="btn btn-primary">
+          <i class="fas fa-plus"></i> Make New Payment
+        </a>
+      </div>
+
+      <!-- Filter Options -->
+      <div class="filter-options">
+        <div class="filter-group">
+          <label>Academic Session</label>
+          <select class="form-control" id="academicSession">
+            <option value="">All Sessions</option>
+            <option>2023/2024</option>
+            <option>2022/2023</option>
+            <option>2021/2022</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Payment Status</label>
+          <select class="form-control" id="paymentStatus">
+            <option value="">All Statuses</option>
+            <option value="successful">Successful</option>
+            <option value="pending">Pending</option>
+            <option value="failed">Failed</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Date Range</label>
+          <select class="form-control" id="dateRange">
+            <option value="">All Time</option>
+            <option value="this-year">This Year</option>
+            <option value="last-3-months">Last 3 Months</option>
+            <option value="last-month">Last Month</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Search</label>
+          <div class="input-icon">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search by reference...">
+          </div>
+        </div>
+      </div>
+
+      <!-- Transactions Table -->
+      <div class="table-responsive">
+        <table class="transactions-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Transaction ID</th>
+              <th>Description</th>
+              <th>Amount (₦)</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="transactionsBody">
+            <!-- Transactions will be loaded here -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" id="emptyState" style="display: none;">
+        <i class="fas fa-file-invoice-dollar"></i>
+        <h3>No Payments Found</h3>
+        <p>You haven't made any payments yet. Click "Make New Payment" to get started.</p>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination" id="pagination">
+        <button class="page-btn" onclick="changePage(-1)"><i class="fas fa-chevron-left"></i></button>
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <button class="page-btn" onclick="changePage(1)"><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Receipt Modal -->
+  <div class="modal" id="receiptModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <div id="modalContent">
+        <!-- Receipt will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Mock transaction data
+    const transactions = [
+      {
+        id: 'UNN20231015001',
+        date: '2023-10-15',
+        description: 'Tuition Fee - 2023/2024',
+        amount: 45000,
+        status: 'successful',
+        method: 'Debit Card',
+        items: [
+          { description: 'Tuition Fee', amount: 45000 }
+        ]
+      },
+      {
+        id: 'UNN20230902002',
+        date: '2023-09-02',
+        description: 'Medical & ICT Fees',
+        amount: 12500,
+        status: 'successful',
+        method: 'Bank Transfer',
+        items: [
+          { description: 'Medical Fee', amount: 5000 },
+          { description: 'ICT Fee', amount: 7500 }
+        ]
+      },
+      {
+        id: 'UNN20230815003',
+        date: '2023-08-15',
+        description: 'Hostel Accommodation',
+        amount: 30000,
+        status: 'pending',
+        method: 'USSD',
+        items: [
+          { description: 'Hostel Fee', amount: 30000 }
+        ]
+      },
+      {
+        id: 'UNN20230710004',
+        date: '2023-07-10',
+        description: 'Library Fee',
+        amount: 3000,
+        status: 'failed',
+        method: 'Debit Card',
+        items: [
+          { description: 'Library Fee', amount: 3000 }
+        ]
+      },
+      {
+        id: 'UNN20221005005',
+        date: '2022-10-05',
+        description: 'Tuition Fee - 2022/2023',
+        amount: 42000,
+        status: 'successful',
+        method: 'Bank Transfer',
+        items: [
+          { description: 'Tuition Fee', amount: 42000 }
+        ]
+      }
+    ];
+
+    // Load transactions
+    document.addEventListener('DOMContentLoaded', function() {
+      renderTransactions(transactions);
+      
+      // Set up filter event listeners
+      document.getElementById('academicSession').addEventListener('change', filterTransactions);
+      document.getElementById('paymentStatus').addEventListener('change', filterTransactions);
+      document.getElementById('dateRange').addEventListener('change', filterTransactions);
+      document.getElementById('searchInput').addEventListener('input', filterTransactions);
+    });
+
+    // Render transactions
+    function renderTransactions(data) {
+      const tbody = document.getElementById('transactionsBody');
+      tbody.innerHTML = '';
+      
+      if (data.length === 0) {
+        document.getElementById('emptyState').style.display = 'block';
+        return;
+      } else {
+        document.getElementById('emptyState').style.display = 'none';
+      }
+      
+      data.forEach(txn => {
+        const date = new Date(txn.date);
+        const formattedDate = date.toLocaleDateString('en-GB');
+        
+        let statusClass = '';
+        let statusText = '';
+        switch(txn.status) {
+          case 'successful':
+            statusClass = 'status-success';
+            statusText = 'Successful';
+            break;
+          case 'pending':
+            statusClass = 'status-pending';
+            statusText = 'Pending';
+            break;
+          case 'failed':
+            statusClass = 'status-failed';
+            statusText = 'Failed';
+            break;
+        }
+        
+        tbody.innerHTML += `
+          <tr>
+            <td>${formattedDate}</td>
+            <td>${txn.id}</td>
+            <td>${txn.description}</td>
+            <td>₦${txn.amount.toLocaleString('en-US')}</td>
+            <td><span class="status-pill ${statusClass}">${statusText}</span></td>
+            <td>
+              <button class="action-btn view-btn" onclick="viewReceipt('${txn.id}')">
+                <i class="fas fa-eye"></i> View
+              </button>
+              ${txn.status === 'successful' ? `
+              <button class="action-btn download-btn" onclick="downloadReceipt('${txn.id}')">
+                <i class="fas fa-download"></i> Download
+              </button>
+              ` : ''}
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    // Filter transactions
+    function filterTransactions() {
+      const sessionFilter = document.getElementById('academicSession').value;
+      const statusFilter = document.getElementById('paymentStatus').value;
+      const dateFilter = document.getElementById('dateRange').value;
+      const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+      
+      let filtered = transactions.filter(txn => {
+        // Academic session filter
+        if (sessionFilter && !txn.description.includes(sessionFilter)) {
+          return false;
+        }
+        
+        // Status filter
+        if (statusFilter && txn.status !== statusFilter) {
+          return false;
+        }
+        
+        // Date range filter
+        const txnDate = new Date(txn.date);
+        const now = new Date();
+        
+        if (dateFilter === 'this-year' && txnDate.getFullYear() !== now.getFullYear()) {
+          return false;
+        }
+        
+        if (dateFilter === 'last-3-months') {
+          const threeMonthsAgo = new Date();
+          threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+          if (txnDate < threeMonthsAgo) {
+            return false;
+          }
+        }
+        
+        if (dateFilter === 'last-month') {
+          const lastMonth = new Date();
+          lastMonth.setMonth(lastMonth.getMonth() - 1);
+          if (txnDate < lastMonth) {
+            return false;
+          }
+        }
+        
+        // Search filter
+        if (searchQuery && !txn.id.toLowerCase().includes(searchQuery) {
+          return false;
+        }
+        
+        return true;
+      });
+      
+      renderTransactions(filtered);
+    }
+
+    // View receipt
+    function viewReceipt(txnId) {
+      const txn = transactions.find(t => t.id === txnId);
+      if (!txn) return;
+      
+      const date = new Date(txn.date);
+      const formattedDate = date.toLocaleDateString('en-GB');
+      
+      let receiptItems = '';
+      txn.items.forEach(item => {
+        receiptItems += `
+          <tr>
+            <td>${item.description}</td>
+            <td>₦${item.amount.toLocaleString('en-US')}</td>
+          </tr>
+        `;
+      });
+      
+      document.getElementById('modalContent').innerHTML = `
+        <div class="receipt">
+          <div class="receipt-header">
+            <img src="../assets/logo.png" alt="UNN Logo" style="height: 60px;">
+            <h3>UNIVERSITY OF NIGERIA, NSUKKA</h3>
+            <p>OFFICIAL PAYMENT RECEIPT</p>
+          </div>
+
+          <div class="receipt-details">
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 20px;">
+              <div>
+                <p><strong>Receipt No:</strong> ${txn.id}</p>
+                <p><strong>Date:</strong> ${formattedDate}</p>
+              </div>
+              <div>
+                <p><strong>Matric No:</strong> 2023/123456</p>
+                <p><strong>Student Name:</strong> Onyekachi Eze</p>
+              </div>
+            </div>
+          </div>
+
+          <table class="receipt-table">
+            <thead>
+              <tr>
+                <th>Description</th>
+                <th>Amount (₦)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${receiptItems}
+            </tbody>
+            <tfoot>
+              <tr>
+                <th>Total</th>
+                <th>₦${txn.amount.toLocaleString('en-US')}</th>
+              </tr>
+              <tr>
+                <th>Payment Method</th>
+                <th>${txn.method}</th>
+              </tr>
+              <tr>
+                <th>Status</th>
+                <th>
+                  <span class="status-pill ${txn.status === 'successful' ? 'status-success' : 
+                    txn.status === 'pending' ? 'status-pending' : 'status-failed'}">
+                  ${txn.status === 'successful' ? 'Successful' : 
+                    txn.status === 'pending' ? 'Pending' : 'Failed'}
+                  </span>
+                </th>
+              </tr>
+            </tfoot>
+          </table>
+
+          <div class="receipt-footer">
+            <p>This is an official receipt from University of Nigeria</p>
+            <p>Thank you for your payment</p>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+          <button class="btn btn-primary" onclick="window.print()">
+            <i class="fas fa-print"></i> Print Receipt
+          </button>
+        </div>
+      `;
+      
+      document.getElementById('receiptModal').style.display = 'block';
+    }
+
+    // Download receipt
+    function downloadReceipt(txnId) {
+      alert(`Receipt ${txnId} downloaded as PDF`);
+      // In a real app, this would generate/download a PDF
+    }
+
+    // Modal functions
+    function closeModal() {
+      document.getElementById('receiptModal').style.display = 'none';
+    }
+
+    // Pagination
+    function changePage(direction) {
+      // In a real app, this would load more transactions
+      console.log('Changing page', direction);
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      if (event.target == document.getElementById('receiptModal')) {
+        closeModal();
+      }
+    }
+  </script>
+
+  <style>
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 30px;
+      border-radius: 8px;
+      max-width: 700px;
+      width: 90%;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      position: relative;
+    }
+    .close-btn {
+      position: absolute;
+      right: 20px;
+      top: 15px;
+      font-size: 28px;
+      font-weight: bold;
+      color: #aaa;
+      cursor: pointer;
+    }
+    .close-btn:hover {
+      color: #333;
+    }
+    @media print {
+      .modal-content {
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+        width: 100%;
+        max-width: 100%;
+      }
+      .close-btn, button {
+        display: none;
+      }
+    }
+  </style>
+</body>
+</html>
